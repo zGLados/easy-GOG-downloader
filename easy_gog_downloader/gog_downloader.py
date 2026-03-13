@@ -13,6 +13,24 @@ from pathlib import Path
 from typing import List, Dict, Optional
 from tqdm import tqdm
 import time
+import signal
+import threading
+import select
+
+# Global flag for graceful shutdown
+_stop_requested = False
+
+def signal_handler(sig, frame):
+    """Handle Ctrl+C gracefully"""
+    global _stop_requested
+    if not _stop_requested:
+        print("\n\nDownload interrupted by user. Progress has been saved.")
+        print("   Run the command again to resume from where you left off.\n")
+        _stop_requested = True
+        sys.exit(0)
+
+# Register signal handler
+signal.signal(signal.SIGINT, signal_handler)
 
 
 class GOGAuthenticator:
@@ -166,10 +184,15 @@ class GOGDownloader:
         """Reset the download tracker"""
         self.downloaded_games = {"games": {}}
         self._save_tracker()
-        print(f"✓ Download tracker reset: {self.tracker_file}")
+        print(f"Download tracker reset: {self.tracker_file}")
     
     def download_file(self, url: str, filepath: Path, resume: bool = True) -> bool:
         """Download a file with progress bar and resume support"""
+        global _stop_requested
+        
+        if _stop_requested:
+            return False
+        
         headers = {
             "Authorization": f"Bearer {self.auth.get_access_token()}"
         }
@@ -205,9 +228,22 @@ class GOGDownloader:
                     initial=start_byte,
                     unit="B",
                     unit_scale=True,
-                    desc=filepath.name
+                    desc=filepath.name + " (Press 'q' to stop)"
                 ) as pbar:
                     for chunk in response.iter_content(chunk_size=8192):
+                        if _stop_requested:
+                            print("\nDownload paused. Progress saved.")
+                            return False
+                        
+                        # Check for 'q' key press (non-blocking)
+                        if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                            key = sys.stdin.read(1)
+                            if key.lower() == 'q':
+                                print("\n\nDownload stopped by user. Progress has been saved.")
+                                print("   Run the command again to resume from where you left off.\n")
+                                _stop_requested = True
+                                return False
+                        
                         if chunk:
                             f.write(chunk)
                             pbar.update(len(chunk))
@@ -454,6 +490,7 @@ class GOGDownloader:
     
     def download_all(self) -> None:
         """Download all games from library"""
+        global _stop_requested
         games = self.library.get_owned_games()
         
         # Count how many are already downloaded
@@ -469,6 +506,9 @@ class GOGDownloader:
         skipped_count = 0
         
         for i, game in enumerate(games, 1):
+            if _stop_requested:
+                break
+            
             title = game.get("title", "Unknown")
             game_id = game.get("id")
             
@@ -477,7 +517,7 @@ class GOGDownloader:
             
             # Skip already downloaded games
             if self._is_game_downloaded(game_id):
-                print(f"\n[{i}/{len(games)}] ✓ {title} (already downloaded)")
+                print(f"\n[{i}/{len(games)}] Already downloaded: {title}")
                 skipped_count += 1
                 continue
             
@@ -486,7 +526,7 @@ class GOGDownloader:
             if self.download_game(game_id, title):
                 self._mark_game_downloaded(game_id, title)
                 downloaded_count += 1
-                print(f"✓ Marked as downloaded: {title}")
+                print(f"Marked as downloaded: {title}")
             
             # Be nice to the API
             time.sleep(2)
@@ -522,8 +562,8 @@ class GOGDownloader:
 def load_config(config_path: str = "config.json") -> Dict:
     """Load configuration from file"""
     if not os.path.exists(config_path):
-        print(f"\n❌ Configuration file not found: {config_path}")
-        print("\n📋 First time setup:")
+        print(f"\nConfiguration file not found: {config_path}")
+        print("\nFirst time setup:")
         print("   1. Create a config file:")
         print(f"      cat > {config_path} << 'EOF'")
         print("      {")
@@ -554,7 +594,7 @@ def load_config(config_path: str = "config.json") -> Dict:
         print("      gog-test")
         print("\n   4. List your games:")
         print("      gog-downloader --list")
-        print("\n💡 For more info: https://github.com/zGLados/easy-GOG-downloader\n")
+        print("\nFor more info: https://github.com/zGLados/easy-GOG-downloader\n")
         sys.exit(1)
     
     with open(config_path, 'r') as f:
@@ -580,9 +620,9 @@ def main():
         tracker_file = Path("downloaded_games.json")
         if tracker_file.exists():
             tracker_file.unlink()
-            print(f"✓ Download tracker reset: {tracker_file}")
+            print(f"Download tracker reset: {tracker_file}")
         else:
-            print(f"✓ No tracker file found (already clean)")
+            print(f"No tracker file found (already clean)")
         return
     
     # Load configuration

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-03-13
+
+### Added
+- **Graceful Shutdown**: Press 'q' during downloads to stop without error messages
+- **Clean Ctrl+C Handling**: Interrupt downloads cleanly with informative message
+- Progress is automatically saved on interruption for easy resume
+
+### Changed
+- Removed all emoji characters from output for better terminal compatibility
+- Progress bars now show "(Press 'q' to stop)" hint
+- Both 'q' and Ctrl+C provide clean exit with saved progress
+
+### Improved
+- Better user experience when stopping downloads mid-process
+- More professional and clean console output
+
 ## [1.1.1] - 2026-03-13
 
 ### Fixed

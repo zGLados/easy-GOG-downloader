@@ -19,7 +19,7 @@ if not os.path.exists('config.json'):
     if os.path.exists('config.example.json'):
         print("Creating config.json from config.example.json...")
         shutil.copy('config.example.json', 'config.json')
-        print("✓ config.json created!")
+        print("config.json created!")
         print()
     else:
         print("WARNING: config.example.json not found!")
@@ -47,7 +47,7 @@ if not os.path.exists('config.json'):
         }
         with open('config.json', 'w') as f:
             json.dump(basic_config, f, indent=2)
-        print("✓ Basic config.json created!")
+        print("Basic config.json created!")
         print()
 
 print("="*70)
@@ -96,7 +96,7 @@ try:
         exit(1)
     
     auth_code = params['code'][0]
-    print(f"\n✓ Found authorization code (length: {len(auth_code)})")
+    print(f"\nFound authorization code (length: {len(auth_code)})")
 
 except Exception as e:
     print(f"\nERROR: Could not parse URL: {e}")
@@ -161,7 +161,7 @@ try:
         with open('config.json', 'w') as f:
             json.dump(config, f, indent=2)
         
-        print("✓ config.json updated successfully!")
+        print("config.json updated successfully!")
         print()
         print("You can now run: python3 test_tool.py")
         print()
