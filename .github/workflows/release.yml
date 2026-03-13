@@ -37,13 +37,23 @@ jobs:
         generate_release_notes: true
         draft: false
         prerelease: false
-        files: |
-          gog_downloader.py
-          get_token.py
-          test_tool.py
-          requirements.txt
-          config.example.json
-          README.md
-          LICENSE
+        body: |
+          ## Installation
+          
+          ### Option 1: From Source
+          Download the source code archive below and extract it:
+          ```bash
+          pip install -r requirements.txt
+          python3 get_token.py
+          python3 gog_downloader.py --list
+          ```
+          
+          ### Option 2: Via pip (coming soon)
+          ```bash
+          pip install easy-gog-downloader
+          gog-downloader --list
+          ```
+          
+          See [README.md](https://github.com/zGLados/easy-GOG-downloader/blob/main/README.md) for full documentation.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
