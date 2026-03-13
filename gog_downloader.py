@@ -288,14 +288,29 @@ class GOGDownloader:
                     print("Could not get download URL")
                     continue
                 
-                # Determine correct file extension based on platform
-                # GOG sometimes uses .bin for everything, but we want proper extensions
-                original_filename = installer.get("file", "")
-                if '.' in original_filename and original_filename.split('.')[-1] not in ['bin']:
-                    # Use original extension if it's not .bin
-                    file_extension = original_filename.split('.')[-1]
+                # Determine correct file extension based on installer type
+                # Check if this is a multi-part installer (e.g., "Game (Part 2 of 5)")
+                import re
+                part_match = re.search(r'\(Part (\d+) of (\d+)\)', name)
+                
+                if part_match:
+                    # Multi-part installer
+                    part_num = int(part_match.group(1))
+                    if part_num == 1:
+                        # Part 1 is the executable installer
+                        if "windows" in os_name.lower():
+                            file_extension = "exe"
+                        elif "linux" in os_name.lower():
+                            file_extension = "sh"
+                        elif "mac" in os_name.lower():
+                            file_extension = "pkg"
+                        else:
+                            file_extension = "bin"
+                    else:
+                        # Part 2+ are data archives, keep as .bin
+                        file_extension = "bin"
                 else:
-                    # Set extension based on platform
+                    # Single installer - use platform-specific extension
                     if "windows" in os_name.lower():
                         file_extension = "exe"
                     elif "linux" in os_name.lower():
@@ -311,6 +326,12 @@ class GOGDownloader:
                     filename_parts.append(f"({version})")
                 if release_year:
                     filename_parts.append(f"({release_year})")
+                
+                # Add part number for multi-part installers
+                if part_match:
+                    part_num = int(part_match.group(1))
+                    total_parts = int(part_match.group(2))
+                    filename_parts.append(f"(Part {part_num})")
                 
                 # Add language and platform if multiple options exist
                 if len(filtered_installers) > 1:
