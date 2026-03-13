@@ -182,6 +182,12 @@ class GOGDownloader:
         
         try:
             response = requests.get(url, headers=headers, stream=True, timeout=30, proxies=self.proxies)
+            
+            # Handle 416 Range Not Satisfiable - file is already complete
+            if response.status_code == 416:
+                print(f"Already downloaded (complete): {filepath.name}")
+                return True
+            
             response.raise_for_status()
             
             total_size = int(response.headers.get("content-length", 0))
@@ -191,7 +197,7 @@ class GOGDownloader:
             # Create parent directory if needed
             filepath.parent.mkdir(parents=True, exist_ok=True)
             
-            with open(filepath, mode) as f:
+            with open(filepath, mode, encoding=None) as f:
                 with tqdm(
                     total=total_size,
                     initial=start_byte,
@@ -205,6 +211,12 @@ class GOGDownloader:
                             pbar.update(len(chunk))
             
             return True
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 416:
+                print(f"Already downloaded (complete): {filepath.name}")
+                return True
+            print(f"HTTP Error downloading {filepath.name}: {e}")
+            return False
         except Exception as e:
             print(f"Error downloading {filepath.name}: {e}")
             return False

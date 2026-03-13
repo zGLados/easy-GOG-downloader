@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-03-13
+
+### Fixed
+- **416 Error Handling**: Properly handle HTTP 416 "Range Not Satisfiable" errors when files are already completely downloaded
+- Already complete downloads now show "Already downloaded (complete)" instead of error messages
+- Resume functionality now correctly recognizes fully downloaded files
+
+### Improved
+- Better error messages distinguishing between HTTP errors and other download failures
+- Complete files are now correctly marked as successful downloads
+
 ## [1.1.0] - 2026-03-13
 
 ### Added
