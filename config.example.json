@@ -1,0 +1,21 @@
+{
+  "credentials": {
+    "refresh_token": "YOUR_GOG_REFRESH_TOKEN_HERE"
+  },
+  "proxy": {
+    "enabled": false,
+    "http": "http://proxy.example.com:8080",
+    "https": "http://proxy.example.com:8080"
+  },
+  "download": {
+    "directory": "./downloads",
+    "languages": ["de", "en"],
+    "platforms": ["windows", "linux"],
+    "parallel_downloads": 2,
+    "resume": true
+  },
+  "filters": {
+    "include_dlc": true,
+    "include_extras": true
+  }
+}
