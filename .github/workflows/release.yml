@@ -40,18 +40,19 @@ jobs:
         body: |
           ## Installation
           
-          ### Option 1: From Source
+          ### Option 1: Via pip (recommended)
+          ```bash
+          pip install easy-gog-downloader
+          gog-get-token
+          gog-downloader --list
+          ```
+          
+          ### Option 2: From Source
           Download the source code archive below and extract it:
           ```bash
           pip install -r requirements.txt
           python3 get_token.py
           python3 gog_downloader.py --list
-          ```
-          
-          ### Option 2: Via pip (coming soon)
-          ```bash
-          pip install easy-gog-downloader
-          gog-downloader --list
           ```
           
           See [README.md](https://github.com/zGLados/easy-GOG-downloader/blob/main/README.md) for full documentation.
