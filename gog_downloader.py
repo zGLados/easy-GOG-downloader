@@ -125,6 +125,46 @@ class GOGDownloader:
         self.library = GOGLibrary(authenticator)
         self.download_dir = Path(config["download"]["directory"])
         self.proxies = authenticator.proxies
+        self.tracker_file = Path("downloaded_games.json")
+        self.downloaded_games = self._load_tracker()
+    
+    def _load_tracker(self) -> Dict:
+        """Load the download tracker from file"""
+        if self.tracker_file.exists():
+            try:
+                with open(self.tracker_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"Warning: Could not load tracker file: {e}")
+                return {"games": {}}
+        return {"games": {}}
+    
+    def _save_tracker(self) -> None:
+        """Save the download tracker to file"""
+        try:
+            with open(self.tracker_file, 'w', encoding='utf-8') as f:
+                json.dump(self.downloaded_games, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"Warning: Could not save tracker file: {e}")
+    
+    def _mark_game_downloaded(self, game_id: int, title: str) -> None:
+        """Mark a game as downloaded in the tracker"""
+        import datetime
+        self.downloaded_games["games"][str(game_id)] = {
+            "title": title,
+            "downloaded_at": datetime.datetime.now().isoformat()
+        }
+        self._save_tracker()
+    
+    def _is_game_downloaded(self, game_id: int) -> bool:
+        """Check if a game has already been downloaded"""
+        return str(game_id) in self.downloaded_games["games"]
+    
+    def reset_tracker(self) -> None:
+        """Reset the download tracker"""
+        self.downloaded_games = {"games": {}}
+        self._save_tracker()
+        print(f"✓ Download tracker reset: {self.tracker_file}")
     
     def download_file(self, url: str, filepath: Path, resume: bool = True) -> bool:
         """Download a file with progress bar and resume support"""
@@ -191,15 +231,20 @@ class GOGDownloader:
         
         return filtered
     
-    def download_game(self, game_id: int, game_title: str) -> None:
-        """Download all files for a game"""
+    def download_game(self, game_id: int, game_title: str) -> bool:
+        """Download all files for a game
+        
+        Returns True if at least one file was successfully downloaded or already exists, False otherwise
+        """
         print(f"\nProcessing: {game_title}")
+        
+        success = False
         
         try:
             details = self.library.get_download_links(game_id)
         except Exception as e:
             print(f"Failed to get download links: {e}")
-            return
+            return False
         
         # Get additional game info for filename formatting
         try:
@@ -242,7 +287,7 @@ class GOGDownloader:
         
         if not filtered_installers:
             print("No matching installers found")
-            return
+            return False
         
         print(f"Found {len(filtered_installers)} installer(s) to download")
         
@@ -346,11 +391,13 @@ class GOGDownloader:
                 
                 if filepath.exists() and filepath.stat().st_size == installer.get("size", 0):
                     print(f"Already downloaded: {filename}")
+                    success = True
                     continue
                 
                 # Download
                 if self.download_file(actual_url, filepath, self.config["download"]["resume"]):
                     print(f"Downloaded: {filename}")
+                    success = True
                 else:
                     print(f"Failed: {filename}")
                     
@@ -379,6 +426,8 @@ class GOGDownloader:
                 for extra in all_extras[:5]:  # Limit extras for now
                     name = extra.get("name", "extra")
                     print(f"  • {name}")
+        
+        return success
     
     def list_library(self) -> None:
         """List all games in library"""
@@ -393,19 +442,47 @@ class GOGDownloader:
         """Download all games from library"""
         games = self.library.get_owned_games()
         
-        print(f"\nStarting download of {len(games)} games...")
+        # Count how many are already downloaded
+        already_downloaded = sum(1 for g in games if self._is_game_downloaded(g.get("id")))
+        to_download = len(games) - already_downloaded
+        
+        print(f"\nLibrary: {len(games)} games")
+        print(f"Already downloaded: {already_downloaded}")
+        print(f"To download: {to_download}")
+        print(f"\nStarting downloads...")
+        
+        downloaded_count = 0
+        skipped_count = 0
         
         for i, game in enumerate(games, 1):
             title = game.get("title", "Unknown")
             game_id = game.get("id")
             
-            print(f"\n[{i}/{len(games)}]")
+            if not game_id:
+                continue
             
-            if game_id:
-                self.download_game(game_id, title)
+            # Skip already downloaded games
+            if self._is_game_downloaded(game_id):
+                print(f"\n[{i}/{len(games)}] ✓ {title} (already downloaded)")
+                skipped_count += 1
+                continue
+            
+            print(f"\n[{i}/{len(games)}] Downloading: {title}")
+            
+            if self.download_game(game_id, title):
+                self._mark_game_downloaded(game_id, title)
+                downloaded_count += 1
+                print(f"✓ Marked as downloaded: {title}")
             
             # Be nice to the API
             time.sleep(2)
+        
+        print(f"\n{'='*70}")
+        print(f"Download Summary:")
+        print(f"  Downloaded: {downloaded_count}")
+        print(f"  Skipped: {skipped_count}")
+        print(f"  Total: {len(games)}")
+        print(f"{'='*70}")
     
     def download_by_title(self, search_title: str) -> None:
         """Download a specific game by title"""
@@ -480,8 +557,19 @@ def main():
     parser.add_argument("--download", type=str, help="Download specific game by title")
     parser.add_argument("--platform", type=str, help="Filter by platform (windows, linux)")
     parser.add_argument("--language", type=str, help="Filter by language (de, en)")
+    parser.add_argument("--reset-tracker", action="store_true", help="Reset the download tracker (forget all downloaded games)")
     
     args = parser.parse_args()
+    
+    # Handle reset-tracker command (doesn't require authentication)
+    if args.reset_tracker:
+        tracker_file = Path("downloaded_games.json")
+        if tracker_file.exists():
+            tracker_file.unlink()
+            print(f"✓ Download tracker reset: {tracker_file}")
+        else:
+            print(f"✓ No tracker file found (already clean)")
+        return
     
     # Load configuration
     config = load_config(args.config)

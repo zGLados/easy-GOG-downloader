@@ -5,12 +5,15 @@ A tool for downloading offline installers and packages from your GOG library.
 ## Features
 
 - Download offline installers from your GOG library
+- **Smart Download Tracking**: Automatically tracks downloaded games, enabling incremental downloads
+- **Incremental Downloads**: Only download new games, skip already downloaded ones
 - Support for multiple languages (German, English)
 - Support for multiple platforms (Windows, Linux)
 - Automatic download organization
 - Resume interrupted downloads
 - Secure authentication via GOG API
 - Optional proxy support for corporate/restricted networks
+- Auto-create configuration on first run
 
 ## Installation
 
@@ -103,6 +106,9 @@ gog-downloader --download-all
 
 # Download specific game
 gog-downloader --download "Game Name"
+
+# Reset download tracker (re-download everything)
+gog-downloader --reset-tracker
 ```
 
 ### If running from source:
@@ -116,6 +122,44 @@ python gog_downloader.py --download-all
 
 # Download specific game
 python gog_downloader.py --download "Game Name"
+
+# Reset download tracker
+python gog_downloader.py --reset-tracker
+```
+
+### Download Tracking
+
+The tool automatically tracks which games you've downloaded in `downloaded_games.json`. This enables:
+
+- **Incremental downloads**: Run `--download-all` multiple times, only new games are downloaded
+- **Resume interrupted sessions**: If downloads are interrupted, restart and continue where you left off
+- **Smart updates**: When you buy new games, just run `--download-all` again
+
+**Example workflow:**
+```bash
+# First time: Download all 50 games
+gog-downloader --download-all
+# Output: Downloaded: 50, Skipped: 0, Total: 50
+
+# Later: Buy 3 new games
+gog-downloader --download-all
+# Output: Downloaded: 3, Skipped: 50, Total: 53
+
+# If you want to re-download everything:
+gog-downloader --reset-tracker
+gog-downloader --download-all
+```
+
+The tracker file format:
+```json
+{
+  "games": {
+    "1234567": {
+      "title": "Cyberpunk 2077",
+      "downloaded_at": "2026-03-13T15:30:45"
+    }
+  }
+}
 ```
 
 ### Filtering downloads

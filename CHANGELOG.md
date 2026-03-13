@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-03-13
+
+### Added
+- **Download Tracking System**: Automatically tracks downloaded games in `downloaded_games.json`
+- **Incremental Downloads**: `--download-all` now skips already downloaded games
+- **Download Summary**: Shows statistics (downloaded/skipped/total) after batch downloads
+- **Reset Tracker**: New `--reset-tracker` option to clear download history
+- **Auto-create Config**: `get_token.py` automatically creates `config.json` from example on first run
+
+### Changed
+- `download_game()` now returns boolean success status for better tracking
+- Download progress shows "already downloaded" status for skipped games
+
+### Improved
+- Efficient re-running of `--download-all` without re-downloading existing games
+- Better user feedback during incremental downloads with progress counters
+- Timestamps recorded for each downloaded game for reference
+
 ## [1.0.3] - 2026-03-13
 
 ### Added

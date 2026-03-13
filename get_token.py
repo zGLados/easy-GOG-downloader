@@ -7,10 +7,48 @@ Gets refresh token through manual browser workflow
 import requests
 import json
 import urllib.parse
+import shutil
+import os
 
 CLIENT_ID = "46899977096215655"
 CLIENT_SECRET = "9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9"
 REDIRECT_URI = "https://embed.gog.com/on_login_success?origin=client"
+
+# Create config.json from example if it doesn't exist
+if not os.path.exists('config.json'):
+    if os.path.exists('config.example.json'):
+        print("Creating config.json from config.example.json...")
+        shutil.copy('config.example.json', 'config.json')
+        print("✓ config.json created!")
+        print()
+    else:
+        print("WARNING: config.example.json not found!")
+        print("Creating basic config.json...")
+        basic_config = {
+            "credentials": {
+                "refresh_token": ""
+            },
+            "proxy": {
+                "enabled": False,
+                "http": "http://proxy.example.com:8080",
+                "https": "http://proxy.example.com:8080"
+            },
+            "download": {
+                "directory": "./downloads",
+                "languages": ["de", "en"],
+                "platforms": ["windows", "linux"],
+                "parallel_downloads": 2,
+                "resume": True
+            },
+            "filters": {
+                "include_dlc": True,
+                "include_extras": True
+            }
+        }
+        with open('config.json', 'w') as f:
+            json.dump(basic_config, f, indent=2)
+        print("✓ Basic config.json created!")
+        print()
 
 print("="*70)
 print("GOG Refresh Token - Manual Method")

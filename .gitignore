@@ -1,6 +1,9 @@
 # Configuration
 config.json
 
+# Download tracking
+downloaded_games.json
+
 # Python
 __pycache__/
 *.py[cod]
