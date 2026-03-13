@@ -20,10 +20,48 @@ A tool for downloading offline installers and packages from your GOG library.
 pip install easy-gog-downloader
 ```
 
-Then get your GOG token and start using:
+**First-time setup:**
+
+1. Create a config.json file in your working directory:
+```bash
+cat > config.json << 'EOF'
+{
+  "credentials": {
+    "refresh_token": ""
+  },
+  "proxy": {
+    "enabled": false,
+    "http": "",
+    "https": ""
+  },
+  "download": {
+    "directory": "./downloads",
+    "languages": ["de", "en"],
+    "platforms": ["windows", "linux"],
+    "parallel_downloads": 2,
+    "resume": true
+  },
+  "filters": {
+    "include_dlc": true,
+    "include_extras": true
+  }
+}
+EOF
+```
+
+2. Get your GOG authentication token:
 ```bash
 gog-get-token
+```
+This will guide you through browser-based authentication and automatically save the token to config.json.
+
+3. Verify your setup:
+```bash
 gog-test
+```
+
+4. Start downloading:
+```bash
 gog-downloader --list
 ```
 
