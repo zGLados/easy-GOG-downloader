@@ -7,6 +7,13 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
 .venv/
 env/
 ENV/
