@@ -27,7 +27,7 @@ cp config.example.json config.json
 
 4. Get your GOG refresh token:
    ```bash
-   python3 manual_get_token.py
+   python3 get_token.py
    ```
    Follow the instructions to authenticate via browser
 
@@ -82,14 +82,25 @@ Title (Version) (ReleaseYear).extension
 ```
 
 Examples:
-- `Lego Star Wars (1.0) (2005).zip`
-- `Witcher 3 (4.04) (2015).exe`
+- `Beneath a Steel Sky 1994 (1.0) (2008).exe` - Windows installer
+- `Beneath a Steel Sky 1994 (gog-2) (2008).sh` - Linux installer
 
-When multiple language or platform versions exist:
-- `Title (Version) (Year) (DE) (W).zip` - German, Windows
-- `Title (Version) (Year) (EN) (L).bin` - English, Linux
+**Multi-part installers** (large games split across multiple files):
+- `BioShock Remastered (1.0.122872) (Part 1).exe` - Setup executable
+- `BioShock Remastered (1.0.122872) (Part 2).bin` - Data archive
+- `BioShock Remastered (1.0.122872) (Part 3).bin` - Data archive
 
-Platform codes: W=Windows, L=Linux, M=Mac
+When multiple language or platform versions exist, they are labeled:
+- `Title (Version) (Year) (DE) (W).exe` - German, Windows
+- `Title (Version) (Year) (EN) (L).sh` - English, Linux
+
+**Platform codes:** W=Windows, L=Linux, M=Mac
+
+**File extensions:**
+- `.exe` - Windows installers (Part 1 of multi-part)
+- `.sh` - Linux installers (Part 1 of multi-part)
+- `.pkg` - macOS installers (Part 1 of multi-part)
+- `.bin` - Data archives (Part 2+ of multi-part installers)
 
 ### Proxy Configuration
 

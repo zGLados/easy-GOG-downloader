@@ -20,7 +20,7 @@ You need a refresh token to authenticate with the GOG API.
 
 **Use the automated token helper:**
 ```bash
-python3 manual_get_token.py
+python3 get_token.py
 ```
 
 The script will:
@@ -31,7 +31,7 @@ The script will:
 5. The script automatically exchanges it for a refresh token and saves it to config.json
 
 **Manual steps if needed:**
-1. Run `python3 manual_get_token.py`
+1. Run `python3 get_token.py`
 2. Copy the displayed URL
 3. Open it in your browser
 4. Log in to GOG
