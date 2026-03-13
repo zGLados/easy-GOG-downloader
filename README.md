@@ -14,46 +14,87 @@ A tool for downloading offline installers and packages from your GOG library.
 
 ## Installation
 
-1. Install Python 3.8+
-2. Install dependencies:
+### Option 1: Via pip (recommended)
+
+```bash
+pip install easy-gog-downloader
+```
+
+Then get your GOG token and start using:
+```bash
+gog-get-token
+gog-test
+gog-downloader --list
+```
+
+### Option 2: From source
+
+1. Clone or download this repository
+2. Install Python 3.8+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Create configuration:
+4. Create configuration:
 ```bash
 cp config.example.json config.json
 ```
 
-4. Get your GOG refresh token:
+5. Get your GOG refresh token:
    ```bash
    python3 get_token.py
    ```
    Follow the instructions to authenticate via browser
 
-5. Test your setup:
+6. Test your setup:
 ```bash
 python3 test_tool.py
 ```
 
 ## Usage
 
-### List your library
+### If installed via pip:
+
 ```bash
+# List your library
+gog-downloader --list
+
+# Download all games (German + English, Windows + Linux)
+gog-downloader --download-all
+
+# Download specific game
+gog-downloader --download "Game Name"
+```
+
+### If running from source:
+
+```bash
+# List your library
 python gog_downloader.py --list
-```
 
-### Download all games (German + English, Windows + Linux)
-```bash
+# Download all games
 python gog_downloader.py --download-all
-```
 
-### Download specific game
-```bash
+# Download specific game
 python gog_downloader.py --download "Game Name"
 ```
 
-### Using filters
+### Filtering downloads
+
+With pip installation:
+```bash
+# Windows versions only
+gog-downloader --download-all --platform windows
+
+# German installers only
+gog-downloader --download-all --language de
+
+# Specific combination
+gog-downloader --download "Cyberpunk 2077" --platform linux --language en
+```
+
+With source installation:
 ```bash
 # Windows versions only
 python gog_downloader.py --download-all --platform windows
