@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-03-13
+
+### Added
+- PyPI package structure for easy installation via pip
+- Console entry points: `gog-downloader`, `gog-get-token`, `gog-test`
+- pyproject.toml for modern Python packaging
+- MANIFEST.in for including additional files in package
+
+### Changed
+- README updated with pip installation instructions as Option 1
+- Release workflow simplified to use GitHub source archives
+- Root scripts maintained for backward compatibility
+
+### Improved
+- Installation now possible via `pip install easy-gog-downloader`
+- Cleaner release process using GitHub's automatic archives
+
 ## [1.0.0] - 2026-03-13
 
 ### Added
