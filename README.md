@@ -39,8 +39,8 @@ cat > config.json << 'EOF'
   },
   "download": {
     "directory": "./downloads",
-    "languages": ["de", "en"],
-    "platforms": ["windows", "linux"],
+    "languages": ["en"],
+    "platforms": ["windows"],
     "parallel_downloads": 2,
     "resume": true
   },
@@ -194,7 +194,9 @@ The `config.json` file contains:
 - **GOG credentials**: Refresh token from your GOG account
 - **Proxy settings**: Optional HTTP/HTTPS proxy configuration
 - **Download directory**: Where files will be saved
-- **Default languages and platforms**: Filter settings
+- **Default languages and platforms**: By default, only English and Windows installers are downloaded. To download other languages or platforms, add them to the config:
+  - Languages: `"languages": ["en", "de", "fr", ...]`
+  - Platforms: `"platforms": ["windows", "linux", "mac"]`
 - **Download settings**: Resume support, parallel downloads, etc.
 
 ### File Naming

@@ -9,8 +9,8 @@
   },
   "download": {
     "directory": "./downloads",
-    "languages": ["de", "en"],
-    "platforms": ["windows", "linux"],
+    "languages": ["en"],
+    "platforms": ["windows"],
     "parallel_downloads": 2,
     "resume": true
   },
