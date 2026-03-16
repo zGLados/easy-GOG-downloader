@@ -14,7 +14,6 @@ from typing import List, Dict, Optional
 from tqdm import tqdm
 import time
 import signal
-import threading
 import select
 
 # Global flag for graceful shutdown
@@ -488,7 +487,6 @@ class GOGDownloader:
     
     def download_all(self) -> None:
         """Download all games from library"""
-        global _stop_requested
         games = self.library.get_owned_games()
         
         # Count how many are already downloaded
