@@ -1,6 +1,6 @@
 """Easy GOG Downloader - Download offline installers from your GOG library."""
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 __author__ = "zGLados"
 __license__ = "MIT"
 

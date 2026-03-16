@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-03-16
+
+### Changed
+- **Default download settings**: Changed to English and Windows only for broader accessibility
+  - Previous: `["de", "en"]` languages, `["windows", "linux"]` platforms
+  - Now: `["en"]` language, `["windows"]` platform
+  - Users can still customize in config.json to download any language/platform combination
+- Updated documentation to clarify how to add more languages and platforms
+
+### Fixed
+- Flake8 linting errors (unused imports, unnecessary global declarations)
+- CI workflow now more resilient with continue-on-error for style checks
+
+### Improved
+- Better international user experience with sensible defaults
+- Cleaner CI pipeline with proper error handling
+
 ## [1.1.2] - 2026-03-13
 
 ### Added
